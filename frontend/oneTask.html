@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр задачи</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Хлебные крошки */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumb a:hover {
+            opacity: 1;
+        }
+
+        .breadcrumb .separator {
+            opacity: 0.6;
+        }
+
+        /* Заголовок страницы */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Карточка задачи */
+        .task-detail-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .task-detail-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+
+        .task-id-badge {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            color: #6c757d;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Заголовок задачи */
+        .task-title-section {
+            margin-bottom: 30px;
+            padding-right: 120px;
+            border-bottom: 2px solid #f1f3f5;
+            padding-bottom: 20px;
+        }
+
+        .task-main-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #2d3436;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+
+        /* Статус задачи */
+        .task-status-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        .status-new {
+            background: linear-gradient(135deg, #ffd166 0%, #ffb347 100%);
+            color: #856404;
+        }
+
+        .status-in_progress {
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #52b788 0%, #40916c 100%);
+            color: white;
+        }
+
+        .status-dot-large {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Описание задачи */
+        .task-description-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            color: #495057;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .task-description-content {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #495057;
+            min-height: 100px;
+        }
+
+        /* Информация о задаче */
+        .task-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+        }
+
+        .info-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .info-value i {
+            color: #667eea;
+            font-size: 20px;
+        }
+
+        /* Кнопки действий */
+        .task-actions {
+            display: flex;
+            gap: 15px;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(183, 23, 158, 0.3);
+        }
+
+        .btn-status {
+            background: linear-gradient(135deg, #ffd166 0%, #ffb347 100%);
+            color: #856404;
+        }
+
+        .btn-status:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 179, 71, 0.3);
+        }
+
+        /* Состояние загрузки */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Сообщение об ошибке */
+        .error-state {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .error-icon {
+            font-size: 64px;
+            color: #ef4444;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #10b981;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .task-detail-card {
+                padding: 25px;
+            }
+            
+            .task-main-title {
+                font-size: 28px;
+            }
+            
+            .task-id-badge {
+                position: static;
+                display: inline-block;
+                margin-bottom: 15px;
+            }
+            
+            .task-title-section {
+                padding-right: 0;
+            }
+            
+            .task-info-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .task-actions {
+                flex-direction: column;
+            }
+            
+            .btn-action {
+                justify-content: center;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .btn-back {
+                align-self: flex-start;
+            }
+        }
+
+        /* Эффекты при наведении */
+        .task-detail-card {
+            transition: transform 0.3s ease;
+        }
+
+        .task-detail-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card {
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Хлебные крошки -->
+        <div class="breadcrumb">
+            <a href="index.html">
+                <i class="fas fa-home"></i>
+                Главная
+            </a>
+            <span class="separator">›</span>
+            <a href="index.html">
+                <i class="fas fa-tasks"></i>
+                Задачи
+            </a>
+            <span class="separator">›</span>
+            <span>Просмотр задачи</span>
+        </div>
+
+        <!-- Заголовок страницы -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-eye"></i>
+                Просмотр задачи
+            </h1>
+            <a href="index.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Назад к списку
+            </a>
+        </div>
+
+        <!-- Состояние загрузки -->
+        <div id="loading" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Загружаем данные задачи...</p>
+        </div>
+
+        <!-- Сообщение об ошибке -->
+        <div id="error-message" class="error-state" style="display: none;">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h2 class="error-title" id="error-title">Ошибка</h2>
+            <p class="error-message" id="error-text"></p>
+            <a href="index.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Вернуться к задачам
+            </a>
+        </div>
+
+        <!-- Карточка задачи (скрыта по умолчанию) -->
+        <div id="task-content" style="display: none;">
+            <div class="task-detail-card">
+                <div class="task-id-badge" id="task-id">#</div>
+                
+                <div class="task-title-section">
+                    <h1 class="task-main-title" id="task-title"></h1>
+                    <div class="task-status-large" id="task-status">
+                        <span class="status-dot-large"></span>
+                        <span id="status-text"></span>
+                    </div>
+                </div>
+
+                <div class="task-description-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-align-left"></i>
+                        Описание задачи
+                    </h3>
+                    <div class="task-description-content" id="task-description">
+                        Загрузка...
+                    </div>
+                </div>
+
+                <div class="task-info-grid">
+                    <div class="info-card">
+                        <span class="info-label">Дата создания</span>
+                        <div class="info-value" id="created-at">
+                            <i class="far fa-calendar-plus"></i>
+                            <span id="created-date">Загрузка...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <span class="info-label">Последнее обновление</span>
+                        <div class="info-value" id="updated-at">
+                            <i class="far fa-calendar-check"></i>
+                            <span id="updated-date">Загрузка...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <span class="info-label">ID задачи</span>
+                        <div class="info-value" id="task-id-value">
+                            <i class="fas fa-hashtag"></i>
+                            <span id="id-value">Загрузка...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <span class="info-label">Время выполнения</span>
+                        <div class="info-value">
+                            <i class="far fa-clock"></i>
+                            <span id="task-duration">Загрузка...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-actions">
+                    <button class="btn-action btn-edit" onclick="editTask()">
+                        <i class="fas fa-edit"></i>
+                        Редактировать задачу
+                    </button>
+                    <button class="btn-action btn-delete" onclick="deleteTask()">
+                        <i class="fas fa-trash-alt"></i>
+                        Удалить задачу
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Получение ID из URL
+        function getTaskIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Форматирование даты
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('ru-RU', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (error) {
+                return dateString;
+            }
+        }
+
+        // Расчет длительности
+        function calculateDuration(createdAt, updatedAt) {
+            try {
+                const created = new Date(createdAt);
+                const updated = new Date(updatedAt);
+                const diffMs = updated - created;
+                
+                if (diffMs < 1000) return "Меньше секунды";
+                
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                
+                if (diffDays > 0) {
+                    return `${diffDays} д. ${diffHours} ч.`;
+                } else if (diffHours > 0) {
+                    return `${diffHours} ч. ${diffMinutes} мин.`;
+                } else {
+                    return `${diffMinutes} минут`;
+                }
+            } catch (error) {
+                return "Неизвестно";
+            }
+        }
+
+        // Получение информации о статусе
+        function getStatusInfo(status) {
+            const statuses = {
+                'new': { 
+                    text: 'Новая', 
+                    class: 'status-new',
+                    icon: 'fas fa-plus-circle'
+                },
+                'in_progress': { 
+                    text: 'В работе', 
+                    class: 'status-in_progress',
+                    icon: 'fas fa-spinner'
+                },
+                'completed': { 
+                    text: 'Завершена', 
+                    class: 'status-completed',
+                    icon: 'fas fa-check-circle'
+                }
+            };
+            return statuses[status] || { 
+                text: status, 
+                class: 'status-new',
+                icon: 'fas fa-question-circle'
+            };
+        }
+
+        // Загрузка данных задачи
+        async function loadTask() {
+            const taskId = getTaskIdFromUrl();
+            
+            if (!taskId) {
+                showError('ID задачи не указан', 'В URL отсутствует параметр id');
+                return;
+            }
+
+            try {
+                // Показываем состояние загрузки
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('task-content').style.display = 'none';
+                document.getElementById('error-message').style.display = 'none';
+
+                // Отправляем GET запрос к API
+                const response = await fetch(`http://localhost:8000/api/tasks/${taskId}`);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Задача не найдена');
+                    } else {
+                        throw new Error(`Ошибка сервера: ${response.status}`);
+                    }
+                }
+
+                const task = await response.json();
+                
+                // Заполняем данные на странице
+                document.getElementById('task-id').textContent = `#${task.id}`;
+                document.getElementById('task-title').textContent = task.title;
+                
+                // Описание
+                const descriptionElement = document.getElementById('task-description');
+                if (task.description && task.description.trim()) {
+                    descriptionElement.textContent = task.description;
+                } else {
+                    descriptionElement.innerHTML = `
+                        <span style="color: #6c757d; font-style: italic;">
+                            <i class="fas fa-info-circle"></i>
+                            Описание отсутствует
+                        </span>
+                    `;
+                }
+                
+                // Статус
+                const statusInfo = getStatusInfo(task.status);
+                const statusElement = document.getElementById('task-status');
+                statusElement.className = `task-status-large ${statusInfo.class}`;
+                document.getElementById('status-text').textContent = statusInfo.text;
+                
+                // Даты
+                document.getElementById('created-date').textContent = formatDate(task.created_at);
+                document.getElementById('updated-date').textContent = formatDate(task.updated_at);
+                
+                // ID
+                document.getElementById('id-value').textContent = task.id;
+                
+                // Длительность
+                document.getElementById('task-duration').textContent = 
+                    calculateDuration(task.created_at, task.updated_at);
+                
+                // Прячем загрузку и показываем контент
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('task-content').style.display = 'block';
+                
+                // Обновляем заголовок страницы
+                document.title = `${task.title} | Просмотр задачи`;
+                
+            } catch (error) {
+                console.error('Ошибка загрузки задачи:', error);
+                showError('Не удалось загрузить задачу', error.message);
+            }
+        }
+
+        // Показать ошибку
+        function showError(title, message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('task-content').style.display = 'none';
+            
+            document.getElementById('error-title').textContent = title;
+            document.getElementById('error-text').textContent = message;
+            document.getElementById('error-message').style.display = 'block';
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'success') {
+            // Удаляем предыдущие уведомления
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(n => n.remove());
+            
+            // Создаем новое уведомление
+            const notification = document.createElement('div');
+            notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Удаляем через 3 секунды
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Действия с задачей
+        function editTask() {
+            const taskId = getTaskIdFromUrl();
+            if (taskId) {
+                window.location.href = `editTask.html?id=${taskId}`;
+            }
+        }
+
+        function changeStatus() {
+            const taskId = getTaskIdFromUrl();
+            if (taskId) {
+                const newStatus = prompt('Введите новый статус (new, in_progress, completed):');
+                if (newStatus && ['new', 'in_progress', 'completed'].includes(newStatus)) {
+                    updateTaskStatus(taskId, newStatus);
+                } else if (newStatus) {
+                    showNotification('Неверный статус. Используйте: new, in_progress, completed', 'error');
+                }
+            }
+        }
+
+        async function updateTaskStatus(taskId, status) {
+            try {
+                const response = await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: status })
+                });
+
+                if (response.ok) {
+                    showNotification('Статус задачи обновлен', 'success');
+                    loadTask(); // Перезагружаем данные
+                } else {
+                    throw new Error('Ошибка обновления статуса');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления статуса:', error);
+                showNotification('Не удалось обновить статус', 'error');
+            }
+        }
+
+        async function deleteTask() {
+            const taskId = getTaskIdFromUrl();
+            
+            if (!taskId) return;
+            
+            if (!confirm('Вы уверены, что хотите удалить эту задачу? Это действие нельзя отменить.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/api/tasks/${taskId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    showNotification('Задача успешно удалена', 'success');
+                    // Через 2 секунды возвращаем на главную
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    throw new Error('Ошибка при удалении задачи');
+                }
+            } catch (error) {
+                console.error('Ошибка удаления:', error);
+                showNotification('Не удалось удалить задачу', 'error');
+            }
+        }
+
+        // Загружаем задачу при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadTask);
+        
+        // Обновляем задачу при фокусе на окне (если вернулись с другой вкладки)
+        window.addEventListener('focus', loadTask);
+    </script>
+</body>
+</html>

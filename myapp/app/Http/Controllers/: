@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Product;
+use Nette\Utils\Json;
+use Illuminate\Http\UploadedFile;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use App\Services\Admin\AdminPanelService;
+
+class AdminPanelController extends Controller
+{
+   private $adminPanelService;
+
+   public function __construct(AdminPanelService $adminPanelService){
+      $this->adminPanelService = $adminPanelService;
+   }
+
+
+   /**
+ * отдаем все продукты админа
+ * @return Json
+ **/
+
+    public function getProductItems(){
+       $user = auth()->user();
+       $products = $this->adminPanelService->get($user);
+       return response()->api($products->toArray());
+    }
+
+    /**
+ * Отправка нового продукта в БД
+ * @param Request $r данные о продукте
+ * @return JSON
+ **/
+
+    public function store(Request $r){
+       //Берем Фото(одно или несколько)
+      $files = $r->file('images');
+
+      if ($files === null) {
+        throw new \Exception("фото не загружено");
+    }
+
+      $user = auth()->user();
+    $this->adminPanelService->store([
+           'name'=>$r->input('name'),
+           'price'=>$r->input('price'),
+           'desc'=>$r->input('description'),
+          'image'=>$files],
+           $user);
+      error_log("Доходит");
+
+
+      return response()->api(["status"=>"ok"]);
+}
+
+   /**
+ * Отдаем все заказы пользователей
+   **/
+    public function getOrders(){
+       //
+    }
+}

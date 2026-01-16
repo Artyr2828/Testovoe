@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание задачи</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 30px;
+            color: white;
+            position: relative;
+            text-align: center;
+        }
+
+        /* Кнопка возврата на главную */
+        .back-to-home {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-to-home:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .has-error input,
+        .has-error textarea,
+        .has-error select {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .form-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            text-align: center;
+            border: none;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Новая кнопка отмены */
+        .cancel-btn {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .cancel-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cancel-btn:active {
+            transform: translateY(0);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .server-response {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 10px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success {
+            background: #f0fdf4;
+            border: 2px solid #16a34a;
+            color: #166534;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 2px solid #dc2626;
+            color: #991b1b;
+        }
+
+        .response-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .response-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .response-text {
+            flex: 1;
+        }
+
+        .response-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .response-details {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .status-hint {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px 30px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header, .form-content {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            /* Адаптация для мобильных */
+            .back-to-home {
+                position: static;
+                transform: none;
+                display: inline-flex;
+                margin-top: 10px;
+                width: auto;
+                padding: 8px 16px;
+            }
+
+            .header {
+                padding-top: 20px;
+                text-align: center;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Адаптация для очень маленьких экранов */
+        @media (max-width: 400px) {
+            .back-to-home span {
+                display: none; /* Скрываем текст, оставляем только иконку */
+            }
+            
+            .back-to-home {
+                padding: 10px;
+                border-radius: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Кнопка возврата на главную -->
+            <a href="index.html" class="back-to-home">
+                <i class="fas fa-arrow-left"></i>
+                <span>На главную</span>
+            </a>
+            
+            <h1>Создание новой задачи</h1>
+            <div class="subtitle">Заполните все обязательные поля для создания задачи</div>
+        </div>
+
+        <div class="form-content">
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="title">Название задачи *</label>
+                    <input type="text" id="title" name="title" placeholder="Введите название задачи" autocomplete="off">
+                    <div class="error-message" id="title-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Описание задачи *</label>
+                    <textarea id="description" name="description" placeholder="Подробно опишите задачу..."></textarea>
+                    <div class="error-message" id="description-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Статус задачи *</label>
+                    <select id="status" name="status">
+                        <option value="">Выберите статус</option>
+                        <option value="new">Новая</option>
+                        <option value="in_progress">В работе</option>
+                        <option value="done">Выполнена</option>
+                    </select>
+                    <div class="error-message" id="status-error"></div>
+                    <div class="status-hint">Доступные статусы: new, in_progress, done</div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="index.html" class="btn cancel-btn">
+                        <i class="fas fa-times"></i>
+                        <span>Отмена</span>
+                    </a>
+                    <button type="submit" class="btn submit-btn" id="submitBtn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span id="btnText">Создать задачу</span>
+                        <span class="spinner" id="spinner"></span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="server-response" id="serverResponse"></div>
+        </div>
+
+        <div class="footer">
+            Все поля, отмеченные *, обязательны для заполнения
+        </div>
+    </div>
+
+    <script>
+        // Не забудьте добавить Font Awesome если еще не добавлен
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+            const faLink = document.createElement('link');
+            faLink.rel = 'stylesheet';
+            faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+            document.head.appendChild(faLink);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('taskForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            const serverResponse = document.getElementById('serverResponse');
+
+            let isSubmitting = false;
+
+            // Обработчик отправки формы
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                if (isSubmitting) return;
+
+                // Сброс предыдущих ошибок и сообщений
+                clearErrors();
+                hideResponse();
+
+                // Валидация на клиенте
+                if (!validateForm()) {
+                    return;
+                }
+
+                // Начинаем отправку
+                isSubmitting = true;
+                setLoading(true);
+
+                try {
+                    // Сбор данных формы
+                    const formData = new FormData(this);
+
+                    // Отправка данных на сервер
+                    const response = await fetch('http://127.0.0.1:8000/api/tasks', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw { status: response.status, data };
+                    }
+
+                    // Успешный ответ
+                    showSuccess('Задача успешно создана!');
+                    form.reset();
+
+                } catch (err) {
+                    // Обработка ошибок
+                    console.error('Ошибка:', err);
+
+                    if (err.data && err.data.errors) {
+                        // Ошибки валидации от Laravel
+                        handleValidationErrors(err.data.errors);
+                    } else if (err.status === 500) {
+                        showError('Ошибка сервера. Пожалуйста, попробуйте позже.');
+                    } else if (err.status === 404) {
+                        showError('Сервер не найден. Проверьте подключение.');
+                    } else if (err.status === 422) {
+                        showError('Ошибка валидации данных. Проверьте введенные данные.');
+                    } else {
+                        showError('Произошла ошибка при создании задачи. Попробуйте еще раз.');
+                    }
+
+                } finally {
+                    // Завершаем отправку
+                    isSubmitting = false;
+                    setLoading(false);
+                }
+            });
+
+            // Валидация формы на клиенте
+            function validateForm() {
+                let isValid = true;
+
+                // Проверка названия задачи
+                const title = document.getElementById('title').value.trim();
+                if (!title) {
+                    showErrorField('title-error', 'Введите название задачи');
+                    markFieldError('title', true);
+                    isValid = false;
+                } else if (title.length < 3) {
+                    showErrorField('title-error', 'Минимум 3 символа');
+                    markFieldError('title', true);
+                    isValid = false;
+                }
+
+                // Проверка описания
+                const description = document.getElementById('description').value.trim();
+                if (!description) {
+                    showErrorField('description-error', 'Введите описание задачи');
+                    markFieldError('description', true);
+                    isValid = false;
+                } else if (description.length < 5) {
+                    showErrorField('description-error', 'Минимум 5 символов');
+                    markFieldError('description', true);
+                    isValid = false;
+                }
+
+                // Проверка статуса
+                const status = document.getElementById('status').value;
+                if (!status) {
+                    showErrorField('status-error', 'Выберите статус задачи');
+                    markFieldError('status', true);
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            // Обработка ошибок валидации от сервера
+            function handleValidationErrors(errors) {
+                // Маппинг ошибок на русский
+                const errorMessages = {
+                    'title.required': 'Название задачи обязательно',
+                    'title.min': 'Название должно быть не менее 3 символов',
+                    'title.max': 'Название должно быть не более 255 символов',
+                    'description.required': 'Описание задачи обязательно',
+                    'description.min': 'Описание должно быть не менее 5 символов',
+                    'status.required': 'Статус задачи обязателен',
+                    'The selected status is invalid': 'Выберите корректный статус: new, in_progress или done',
+                    'status.in': 'Выберите корректный статус: new, in_progress или done'
+                };
+
+                // Обработка каждой ошибки
+                for (const field in errors) {
+                    const errorId = `${field}-error`;
+                    const errorElement = document.getElementById(errorId);
+
+                    if (!errorElement) continue;
+
+                    // Получаем сообщение об ошибке
+                    let errorText = errors[field][0];
+
+                    // Пытаемся найти русский перевод
+                    for (const [key, translation] of Object.entries(errorMessages)) {
+                        if (errorText.includes(key) || errorText === key) {
+                            errorText = translation;
+                            break;
+                        }
+                    }
+
+                    // Отображаем ошибку
+                    showErrorField(errorId, errorText);
+                    markFieldError(field, true);
+                }
+
+                // Показываем общее сообщение об ошибке
+                if (Object.keys(errors).length > 0) {
+                    showError('Пожалуйста, исправьте ошибки в форме');
+                }
+            }
+
+            // Показать ошибку для конкретного поля
+            function showErrorField(fieldId, message) {
+                const errorElement = document.getElementById(fieldId);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'flex';
+                }
+            }
+
+            // Отметить поле с ошибкой
+            function markFieldError(fieldId, hasError) {
+                const fieldElement = document.getElementById(fieldId);
+                const formGroup = fieldElement?.closest('.form-group');
+
+                if (formGroup) {
+                    formGroup.classList.toggle('has-error', hasError);
+                }
+            }
+
+            // Очистить все ошибки
+            function clearErrors() {
+                document.querySelectorAll('.error-message').forEach(el => {
+                    el.textContent = '';
+                    el.style.display = 'none';
+                });
+
+                document.querySelectorAll('.form-group').forEach(el => {
+                    el.classList.remove('has-error');
+                });
+            }
+
+            // Показать сообщение об успехе
+            function showSuccess(message) {
+                serverResponse.innerHTML = `
+                    <div class="response-content">
+                        <div class="response-icon">✅</div>
+                        <div class="response-text">
+                            <div class="response-title">Готово!</div>
+                            <div class="response-details">${message}</div>
+                        </div>
+                    </div>
+                `;
+                serverResponse.className = 'server-response success';
+                serverResponse.style.display = 'block';
+                
+                // Через 2 секунды предлагаем перейти на главную
+                setTimeout(() => {
+                    if (confirm('Задача создана успешно! Хотите перейти к списку задач?')) {
+                        window.location.href = 'index.html';
+                    }
+                }, 2000);
+            }
+
+            // Показать сообщение об ошибке
+            function showError(message) {
+                serverResponse.innerHTML = `
+                    <div class="response-content">
+                        <div class="response-icon">❌</div>
+                        <div class="response-text">
+                            <div class="response-title">Ошибка</div>
+                            <div class="response-details">${message}</div>
+                        </div>
+                    </div>
+                `;
+                serverResponse.className = 'server-response error';
+                serverResponse.style.display = 'block';
+            }
+
+            // Скрыть сообщение
+            function hideResponse() {
+                serverResponse.style.display = 'none';
+            }
+
+            // Установить состояние загрузки
+            function setLoading(isLoading) {
+                if (isLoading) {
+                    submitBtn.disabled = true;
+                    btnText.textContent = 'Создание...';
+                    spinner.style.display = 'block';
+                } else {
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Создать задачу';
+                    spinner.style.display = 'none';
+                }
+            }
+
+            // Обработчики для сброса ошибок при вводе
+            document.getElementById('title').addEventListener('input', function() {
+                if (this.value.trim().length >= 3) {
+                    markFieldError('title', false);
+                    document.getElementById('title-error').style.display = 'none';
+                }
+            });
+
+            document.getElementById('description').addEventListener('input', function() {
+                if (this.value.trim().length >= 5) {
+                    markFieldError('description', false);
+                    document.getElementById('description-error').style.display = 'none';
+                }
+            });
+
+            document.getElementById('status').addEventListener('change', function() {
+                if (this.value) {
+                    markFieldError('status', false);
+                    document.getElementById('status-error').style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

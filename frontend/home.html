@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UmmahConnect - Главная</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* СТИЛИ БУДУТ В ФАЙЛЕ 2 */
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Мобильная навигация -->
+        <nav class="mobile-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Главная</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-compass"></i>
+                <span>Поиск</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Создать</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-heart"></i>
+                <span>Уведомления</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Профиль</span>
+            </div>
+        </nav>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Левая панель -->
+            <aside class="left-sidebar">
+                <div class="logo">
+                    <i class="fas fa-mosque"></i>
+                    <h2>UmmahConnect</h2>
+                </div>
+                
+                <div class="sidebar-menu">
+                    <a href="#" class="menu-item active">
+                        <i class="fas fa-home"></i>
+                        <span>Главная</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-fire"></i>
+                        <span>Популярное</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-users"></i>
+                        <span>Сообщества</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-video"></i>
+                        <span>Видео</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-book"></i>
+                        <span>Статьи</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>События</span>
+                    </a>
+                </div>
+
+                <div class="prayer-widget">
+                    <h3>Время намаза</h3>
+                    <div class="prayer-times">
+                        <div class="prayer">
+                            <span>Фаджр</span>
+                            <span>05:15</span>
+                        </div>
+                        <div class="prayer current">
+                            <span>Зухр</span>
+                            <span>13:20</span>
+                        </div>
+                        <div class="prayer">
+                            <span>Аср</span>
+                            <span>17:45</span>
+                        </div>
+                        <div class="prayer">
+                            <span>Магриб</span>
+                            <span>20:30</span>
+                        </div>
+                        <div class="prayer">
+                            <span>Иша</span>
+                            <span>22:10</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Центральная лента -->
+            <main class="feed">
+                <!-- Создание поста -->
+                <div class="create-post-card">
+                    <div class="post-input">
+                        <img id="userProfileAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Avatar" class="user-avatar">
+                        <input type="text" id="postContent" placeholder="Поделитесь своими мыслями...">
+                    </div>
+                    <div class="post-actions">
+                        <button class="action-btn" id="addImageBtn">
+                            <i class="fas fa-image"></i>
+                            <span>Фото</span>
+                        </button>
+                        <button class="action-btn" id="addVideoBtn">
+                            <i class="fas fa-video"></i>
+                            <span>Видео</span>
+                        </button>
+                        <button class="action-btn" id="createPostBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Опубликовать</span>
+                        </button>
+                    </div>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+
+                <!-- Секция загрузки -->
+                <div class="loading-section" id="loadingSection">
+                    <div class="loading-spinner"></div>
+                    <p>Загрузка постов...</p>
+                </div>
+
+                <!-- Секция пустой ленты -->
+                <div class="empty-feed" id="emptyFeed" style="display: none;">
+                    <i class="fas fa-newspaper"></i>
+                    <h3>Лента пуста</h3>
+                    <p>Будьте первым, кто поделится чем-то интересным!</p>
+                    <button class="btn-primary" id="createFirstPost">Создать первый пост</button>
+                </div>
+
+                <!-- Контейнер для постов -->
+                <div id="postsContainer"></div>
+
+                <!-- Кнопка загрузки еще -->
+                <div class="load-more" id="loadMoreContainer">
+                    <button class="btn-secondary" id="loadMoreBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Загрузить еще</span>
+                    </button>
+                </div>
+            </main>
+
+            <!-- Правая панель -->
+            <aside class="right-sidebar">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <img id="currentUserAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Profile" class="profile-avatar">
+                        <div class="profile-info">
+                            <h4 id="currentUserName">Загрузка...</h4>
+                            <span id="currentUserEmail">@username</span>
+                        </div>
+                    </div>
+                    <button class="edit-profile-btn" id="editProfileBtn">Редактировать профиль</button>
+                </div>
+
+                <div class="suggestions-card">
+                    <div class="card-header">
+                        <h3>Рекомендации</h3>
+                        <a href="#">Все</a>
+                    </div>
+                    <div class="suggestion-list" id="suggestionsList">
+                        <!-- Динамически загружаемые рекомендации -->
+                    </div>
+                </div>
+
+                <div class="quran-card">
+                    <h3>Аят дня</h3>
+                    <div class="quran-verse" id="quranVerse">
+                        "Воистину, с трудностью приходит легкость"
+                    </div>
+                    <div class="quran-reference">
+                        Коран, 94:5-6
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="notificationText"></span>
+        </div>
+    </div>
+
+    <!-- Модальное окно для изображения -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img id="modalImage" src="" alt="Просмотр изображения">
+        </div>
+    </div>
+
+</body>
+</html>
+
+<style>
+    :root {
+        --primary: #2e7d32;
+        --primary-dark: #1b5e20;
+        --primary-light: #4caf50;
+        --accent: #ff9800;
+        --text: #333333;
+        --text-light: #666666;
+        --text-lighter: #999999;
+        --background: #ffffff;
+        --surface: #f8f9fa;
+        --border: #e0e0e0;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        --radius: 16px;
+        --radius-sm: 8px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        width: 100%;
+        overflow-x: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        background-color: var(--surface);
+        color: var(--text);
+        line-height: 1.5;
+    }
+
+    .app-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Мобильная навигация */
+    .mobile-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--background);
+        display: flex;
+        justify-content: space-around;
+        padding: 12px 0;
+        border-top: 1px solid var(--border);
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-nav .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: var(--text-lighter);
+        transition: color 0.2s;
+    }
+
+    .mobile-nav .nav-item.active {
+        color: var(--primary);
+    }
+
+    .mobile-nav .nav-item i {
+        font-size: 20px;
+    }
+
+    /* Основной контент */
+    .main-content {
+        flex: 1;
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+        padding-bottom: 70px;
+    }
+
+    /* Боковые панели */
+    .left-sidebar, .right-sidebar {
+        width: 280px;
+        padding: 20px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .left-sidebar {
+        border-right: 1px solid var(--border);
+    }
+
+    .right-sidebar {
+        border-left: 1px solid var(--border);
+    }
+
+    /* Лента */
+    .feed {
+        flex: 1;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Логотип */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 30px;
+        padding: 0 10px;
+    }
+
+    .logo i {
+        font-size: 28px;
+        color: var(--primary);
+    }
+
+    .logo h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    /* Меню */
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 30px;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .menu-item:hover {
+        background-color: var(--surface);
+    }
+
+    .menu-item.active {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .menu-item i {
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
+    }
+
+    /* Виджет намаза */
+    .prayer-widget {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 20px;
+        border-radius: var(--radius);
+        margin-top: 20px;
+    }
+
+    .prayer-widget h3 {
+        margin-bottom: 16px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .prayer-times {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .prayer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+    }
+
+    .prayer.current {
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Карточки */
+    .create-post-card, .post-card, .profile-card, .suggestions-card, .quran-card {
+        background: var(--background);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    /* Создание поста */
+    .create-post-card .post-input {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .user-avatar, .comment-avatar, .profile-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: var(--surface);
+    }
+
+    .create-post-card input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: var(--surface);
+        font-size: 14px;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 16px;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border: none;
+        background: none;
+        color: var(--text-light);
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .action-btn:hover {
+        background: var(--surface);
+        color: var(--primary);
+    }
+
+    /* Заголовок поста */
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .user-info h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .user-info span {
+        font-size: 13px;
+        color: var(--text-light);
+    }
+
+    .menu-btn {
+        border: none;
+        background: none;
+        color: var(--text-light);
+        padding: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .menu-btn:hover {
+        background: var(--surface);
+    }
+
+    /* Контент поста */
+    .post-content {
+        margin-bottom: 16px;
+    }
+
+    .post-content p {
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+    }
+
+    .post-image {
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        margin-bottom: 16px;
+        cursor: pointer;
+    }
+
+    .post-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .post-image img:hover {
+        transform: scale(1.02);
+    }
+
+    /* Статистика поста */
+    .post-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--text-light);
+    }
+
+    .reactions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .reaction-icons {
+        display: flex;
+        gap: 2px;
+    }
+
+    .reaction-icons i {
+        font-size: 14px;
+        color: var(--primary);
+    }
+
+    /* Панель действий */
+    .post-actions-bar {
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* Комментарии */
+    .comments-section {
+        padding-top: 16px;
+    }
+
+    .comment {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .comment-content {
+        flex: 1;
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    .comment-header strong {
+        font-size: 14px;
+    }
+
+    .comment-header span {
+        font-size: 12px;
+        color: var(--text-light);
+    }
+
+    .comment-actions {
+        margin-top: 8px;
+    }
+
+    .comment-actions button {
+        border: none;
+        background: none;
+        color: var(--text-light);
+        font-size: 12px;
+        margin-right: 12px;
+        cursor: pointer;
+    }
+
+    .add-comment {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .add-comment input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: var(--surface);
+        font-size: 14px;
+    }
+
+    /* Карточка профиля */
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .profile-info h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .profile-info span {
+        font-size: 14px;
+        color: var(--text-light);
+    }
+
+    .edit-profile-btn {
+        width: 100%;
+        padding: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .edit-profile-btn:hover {
+        background: var(--border);
+    }
+
+    /* Рекомендации */
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .card-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .card-header a {
+        font-size: 14px;
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .suggestion-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .suggestion {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .suggestion img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    .suggestion-info {
+        flex: 1;
+    }
+
+    .suggestion-info strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .suggestion-info span {
+        font-size: 12px;
+        color: var(--text-light);
+    }
+
+    .follow-btn {
+        padding: 6px 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .follow-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Аят дня */
+    .quran-card h3 {
+        margin-bottom: 12px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .quran-verse {
+        font-style: italic;
+        font-size: 16px;
+        line-height: 1.4;
+        margin-bottom: 8px;
+        color: var(--primary);
+    }
+
+    .quran-reference {
+        font-size: 14px;
+        color: var(--text-light);
+        text-align: right;
+    }
+
+    /* Загрузка */
+    .loading-section {
+        text-align: center;
+        padding: 40px;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--surface);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s ease-in-out infinite;
+        margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Пустая лента */
+    .empty-feed {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-feed i {
+        font-size: 48px;
+        color: var(--text-lighter);
+        margin-bottom: 16px;
+    }
+
+    .empty-feed h3 {
+        font-size: 20px;
+        margin-bottom: 8px;
+        color: var(--text);
+    }
+
+    .empty-feed p {
+        color: var(--text-light);
+        margin-bottom: 24px;
+    }
+
+    .btn-primary {
+        padding: 12px 24px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+        padding: 10px 20px;
+        background: transparent;
+        color: var(--text);
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    /* Загрузка еще */
+    .load-more {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    /* Модальное окно */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+        position: relative;
+        margin: auto;
+        padding: 20px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .close-modal {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1002;
+    }
+
+    .modal-content img {
+        width: 100%;
+        height: auto;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: var(--radius-sm);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Предпросмотр изображения */
+    .image-preview {
+        margin-top: 16px;
+        display: none;
+    }
+
+    .image-preview img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+    }
+
+    /* Уведомления */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--primary);
+        color: white;
+        padding: 15px 20px;
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+
+    .notification.show {
+        transform: translateX(0);
+    }
+
+    .notification.error {
+        background: #d32f2f;
+    }
+
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 1024px) {
+        .left-sidebar, .right-sidebar {
+            display: none;
+        }
+        
+        .feed {
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .feed {
+            padding: 16px;
+        }
+        
+        .create-post-card, .post-card {
+            padding: 16px;
+        }
+        
+        .mobile-nav {
+            display: flex;
+        }
+        
+        .main-content {
+            padding-bottom: 70px;
+        }
+    }
+
+    @media (min-width: 1025px) {
+        .mobile-nav {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Элементы DOM
+        const postsContainer = document.getElementById('postsContainer');
+        const loadingSection = document.getElementById('loadingSection');
+        const emptyFeed = document.getElementById('emptyFeed');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        
+        // Переменные состояния
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMorePosts = true;
+        let authToken = null;
+
+        // Получить токен из localStorage
+        function getAuthToken() {
+            // Проверяем разные возможные места, где мог сохраниться токен
+            const token = localStorage.getItem('authToken') || 
+                         localStorage.getItem('token') || 
+                         localStorage.getItem('access_token') ||
+                         sessionStorage.getItem('authToken') ||
+                         sessionStorage.getItem('token');
+            
+            console.log('Найден токен:', token ? 'Да' : 'Нет');
+            return token;
+        }
+
+        // Проверить, авторизован ли пользователь
+        function checkAuth() {
+            authToken = getAuthToken();
+            
+            if (!authToken) {
+                // Если нет токена, показываем сообщение и редиректим
+                showNotification('Пожалуйста, войдите в систему', true);
+                setTimeout(() => {
+                    window.location.href = 'register.html';
+                }, 2000);
+                return false;
+            }
+            return true;
+        }
+
+        // Показать уведомление
+        function showNotification(message, isError = false) {
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            if (isError) {
+                notification.classList.add('error');
+            } else {
+                notification.classList.remove('error');
+            }
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/user/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    // Обновляем данные пользователя в интерфейсе
+                    updateUserProfile(userData);
+                } else if (response.status === 401) {
+                    // Токен невалидный
+                    handleInvalidToken();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных пользователя:', error);
+            }
+        }
+
+        // Обновление профиля пользователя
+        function updateUserProfile(userData) {
+            const userName = userData.name || userData.username || 'Пользователь';
+            const userEmail = userData.email || '';
+            const username = userEmail.split('@')[0] || 'username';
+            
+            document.getElementById('currentUserName').textContent = userName;
+            document.getElementById('currentUserEmail').textContent = `@${username}`;
+            
+            // Устанавливаем аватарки если есть
+            if (userData.avatar) {
+                document.getElementById('userProfileAvatar').src = userData.avatar;
+                document.getElementById('currentUserAvatar').src = userData.avatar;
+            }
+        }
+
+        // Обработка невалидного токена
+        function handleInvalidToken() {
+            showNotification('Сессия истекла. Пожалуйста, войдите снова.', true);
+            
+            // Очищаем старые токены
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('token');
+            
+            setTimeout(() => {
+                window.location.href = 'register.html';
+            }, 2000);
+        }
+
+        // Загрузка постов
+        async function loadPosts(page = 1) {
+            if (isLoading || !hasMorePosts) return;
+            
+            isLoading = true;
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.innerHTML = '<div class="loading" style="display: inline-block; width: 16px; height: 16px; margin-right: 8px;"></div><span>Загрузка...</span>';
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/home/?page=${page}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const posts = await response.json();
+                    handlePostsResponse(posts, page);
+                } else if (response.status === 401) {
+                    handleInvalidToken();
+                } else {
+                    throw new Error(`Ошибка загрузки постов: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки постов:', error);
+                showNotification('Ошибка при загрузке постов', true);
+            } finally {
+                isLoading = false;
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.innerHTML = '<i class="fas fa-sync-alt"></i><span>Загрузить еще</span>';
+            }
+        }
+
+        // Обработка ответа с постами
+        function handlePostsResponse(posts, page) {
+            // Если это первая страница и нет постов
+            if (page === 1 && (!posts || posts.length === 0)) {
+                loadingSection.style.display = 'none';
+                emptyFeed.style.display = 'block';
+                loadMoreContainer.style.display = 'none';
+                return;
+            }
+            
+            // Если постов нет больше
+            if (!posts || posts.length === 0) {
+                hasMorePosts = false;
+                loadMoreContainer.style.display = 'none';
+            } else {
+                // Рендерим посты
+                renderPosts(posts, page === 1);
+                
+                // Показываем кнопку "Загрузить еще" если есть еще посты
+                loadMoreContainer.style.display = posts.length >= 10 ? 'block' : 'none';
+            }
+            
+            // Скрываем загрузку
+            loadingSection.style.display = 'none';
+        }
+
+        // Рендеринг постов
+        function renderPosts(posts, clear = false) {
+            if (clear) {
+                postsContainer.innerHTML = '';
+            }
+            
+            posts.forEach(post => {
+                const postElement = createPostElement(post);
+                postsContainer.appendChild(postElement);
+            });
+        }
+
+        // Создание элемента поста
+        function createPostElement(post) {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post-card';
+            postDiv.dataset.postId = post.id;
+            
+            // Форматирование даты
+            const postDate = formatPostDate(post.created_at);
+            
+            // Изображения поста
+            const imagesHTML = createImagesHTML(post.img__connect);
+            
+            // Статистика
+            const likesCount = post.likes_count || post.likes || 0;
+            const commentsCount = post.comments_count || post.comments || 0;
+            const sharesCount = post.shares_count || 0;
+            
+            postDiv.innerHTML = `
+                <div class="post-header">
+                    <div class="user-info">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Avatar" class="user-avatar">
+                        <div>
+                            <h4>${escapeHtml(post.user?.name || post.username || 'Пользователь')}</h4>
+                            <span>${postDate}</span>
+                        </div>
+                    </div>
+                    <button class="menu-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+
+                <div class="post-content">
+                    <p>${escapeHtml(post.title || post.content || '')}</p>
+                    ${imagesHTML}
+                </div>
+
+                <div class="post-stats">
+                    <div class="reactions">
+                        <span class="reaction-count">${likesCount}</span>
+                        <div class="reaction-icons">
+                            <i class="fas fa-heart"></i>
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                    </div>
+                    <div class="comments-count">
+                        <span>${formatCommentsCount(commentsCount)}</span>
+                        <span>${sharesCount} репостов</span>
+                    </div>
+                </div>
+
+                <div class="post-actions-bar">
+                    <button class="action-btn like-btn" data-post-id="${post.id}" data-liked="${post.is_liked || false}">
+                        ${post.is_liked ? '<i class="fas fa-thumbs-up"></i>' : '<i class="far fa-thumbs-up"></i>'}
+                        <span>Нравится</span>
+                    </button>
+                    <button class="action-btn comment-btn" data-post-id="${post.id}">
+                        <i class="far fa-comment"></i>
+                        <span>Комментировать</span>
+                    </button>
+                    <button class="action-btn share-btn" data-post-id="${post.id}">
+                        <i class="far fa-share-square"></i>
+                        <span>Поделиться</span>
+                    </button>
+                </div>
+
+                <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                    <!-- Комментарии будут загружаться динамически -->
+                    <div class="add-comment">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Avatar" class="comment-avatar">
+                        <input type="text" class="comment-input" placeholder="Напишите комментарий..." data-post-id="${post.id}">
+                    </div>
+                </div>
+            `;
+            
+            return postDiv;
+        }
+
+        // Форматирование даты
+        function formatPostDate(dateString) {
+            if (!dateString) return 'Только что';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Только что';
+            if (diffMins < 60) return `${diffMins} мин назад`;
+            if (diffHours < 24) return `${diffHours} ч назад`;
+            if (diffDays < 7) return `${diffDays} дн назад`;
+            
+            return date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        // Создание HTML для изображений
+        function createImagesHTML(images) {
+            if (!images || images.length === 0) return '';
+            
+            return images.map((img, index) => {
+                const imgUrl = img.url || img;
+                return `
+                    <div class="post-image" onclick="openImageModal('${imgUrl}')">
+                        <img src="${imgUrl}" alt="Изображение ${index + 1}" loading="lazy">
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Форматирование количества комментариев
+        function formatCommentsCount(count) {
+            if (count === 0) return 'Нет комментариев';
+            if (count === 1) return '1 комментарий';
+            if (count < 5) return `${count} комментария`;
+            return `${count} комментариев`;
+        }
+
+        // Экранирование HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Создание нового поста
+        async function createPost(content) {
+            const createPostBtn = document.getElementById('createPostBtn');
+            const originalContent = createPostBtn.innerHTML;
+            
+            createPostBtn.innerHTML = '<div class="loading" style="display: inline-block; width: 16px; height: 16px; margin-right: 8px;"></div><span>Публикация...</span>';
+            createPostBtn.disabled = true;
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/posts/create', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: content,
+                        content: content
+                    })
+                });
+                
+                if (response.ok) {
+                    const newPost = await response.json();
+                    
+                    // Очищаем поле ввода
+                    document.getElementById('postContent').value = '';
+                    
+                    // Добавляем новый пост в начало ленты
+                    const postElement = createPostElement(newPost);
+                    postsContainer.insertBefore(postElement, postsContainer.firstChild);
+                    
+                    showNotification('Пост успешно опубликован!');
+                    
+                    // Скрываем пустую ленту если она была показана
+                    emptyFeed.style.display = 'none';
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Ошибка при публикации', true);
+                }
+            } catch (error) {
+                console.error('Ошибка создания поста:', error);
+                showNotification('Ошибка подключения к серверу', true);
+            } finally {
+                createPostBtn.innerHTML = originalContent;
+                createPostBtn.disabled = false;
+            }
+        }
+
+        // Лайк поста
+        async function likePost(postId, button) {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/posts/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const reactionCount = button.closest('.post-card').querySelector('.reaction-count');
+                    
+                    if (data.liked) {
+                        button.innerHTML = '<i class="fas fa-thumbs-up"></i><span>Нравится</span>';
+                        reactionCount.textContent = parseInt(reactionCount.textContent) + 1;
+                    } else {
+                        button.innerHTML = '<i class="far fa-thumbs-up"></i><span>Нравится</span>';
+                        reactionCount.textContent = parseInt(reactionCount.textContent) - 1;
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка лайка:', error);
+            }
+        }
+
+        // Модальное окно для изображения
+        window.openImageModal = function(imageUrl) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            
+            modalImg.src = imageUrl;
+            modal.style.display = 'block';
+            
+            // Закрытие модального окна
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+            
+            document.querySelector('.close-modal').onclick = function() {
+                modal.style.display = 'none';
+            };
+        };
+
+        // Инициализация
+        async function init() {
+            // Проверяем авторизацию
+            if (!checkAuth()) {
+                return;
+            }
+            
+            // Загружаем данные пользователя
+            await loadUserData();
+            
+            // Загружаем посты
+            await loadPosts();
+            
+            // Загружаем рекомендации
+            loadSuggestions();
+        }
+
+        // Загрузка рекомендаций
+        async function loadSuggestions() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/users/suggestions', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const suggestions = await response.json();
+                    renderSuggestions(suggestions);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки рекомендаций:', error);
+                // Если эндпоинта нет, показываем заглушку
+                renderDefaultSuggestions();
+            }
+        }
+
+        // Рендеринг рекомендаций
+        function renderSuggestions(suggestions) {
+            const suggestionsList = document.getElementById('suggestionsList');
+            
+            if (!suggestions || suggestions.length === 0) {
+                renderDefaultSuggestions();
+                return;
+            }
+            
+            suggestionsList.innerHTML = suggestions.map(suggestion => `
+                <div class="suggestion">
+                    <img src="${suggestion.avatar || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23666\'%3E%3Cpath d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/%3E%3C/svg%3E'}" alt="Avatar">
+                    <div class="suggestion-info">
+                        <strong>${suggestion.name || suggestion.username}</strong>
+                        <span>${suggestion.followers_count || 0} подписчиков</span>
+                    </div>
+                    <button class="follow-btn" data-user-id="${suggestion.id}">Подписаться</button>
+                </div>
+            `).join('');
+        }
+
+        // Рендеринг дефолтных рекомендаций
+        function renderDefaultSuggestions() {
+            const suggestionsList = document.getElementById('suggestionsList');
+            suggestionsList.innerHTML = `
+                <div class="suggestion">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Avatar">
+                    <div class="suggestion-info">
+                        <strong>Исламские лекции</strong>
+                        <span>125K подписчиков</span>
+                    </div>
+                    <button class="follow-btn">Подписаться</button>
+                </div>
+                <div class="suggestion">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Avatar">
+                    <div class="suggestion-info">
+                        <strong>Мусульманская семья</strong>
+                        <span>89K подписчиков</span>
+                    </div>
+                    <button class="follow-btn">Подписаться</button>
+                </div>
+            `;
+        }
+
+        // Обработчики событий
+        document.getElementById('createPostBtn').addEventListener('click', function() {
+            const content = document.getElementById('postContent').value.trim();
+            
+            if (!content) {
+                showNotification('Введите текст поста', true);
+                return;
+            }
+            
+            createPost(content);
+        });
+
+        document.getElementById('postContent').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                document.getElementById('createPostBtn').click();
+            }
+        });
+
+        document.getElementById('loadMoreBtn').addEventListener('click', function() {
+            currentPage++;
+            loadPosts(currentPage);
+        });
+
+        document.getElementById('createFirstPost').addEventListener('click', function() {
+            document.getElementById('postContent').focus();
+            showNotification('Начните писать ваш первый пост!');
+        });
+
+        // Делегирование событий для динамически созданных элементов
+        document.addEventListener('click', function(e) {
+            // Лайки
+            if (e.target.closest('.like-btn')) {
+                const button = e.target.closest('.like-btn');
+                const postId = button.dataset.postId;
+                likePost(postId, button);
+            }
+            
+            // Комментарии
+            if (e.target.closest('.comment-btn')) {
+                const postId = e.target.closest('.comment-btn').dataset.postId;
+                const commentsSection = document.getElementById(`comments-${postId}`);
+                commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+                
+                // Если открываем комментарии, загружаем их
+                if (commentsSection.style.display === 'block') {
+                    loadComments(postId);
+                }
+            }
+            
+            // Подписка на пользователей
+            if (e.target.closest('.follow-btn')) {
+                const button = e.target.closest('.follow-btn');
+                const userId = button.dataset.userId;
+                
+                if (button.textContent === 'Подписаться') {
+                    button.textContent = 'Отписаться';
+                    button.style.backgroundColor = '#666';
+                    showNotification('Вы подписались');
+                } else {
+                    button.textContent = 'Подписаться';
+                    button.style.backgroundColor = '';
+                    showNotification('Вы отписались');
+                }
+            }
+        });
+
+        // Загрузка комментариев
+        async function loadComments(postId) {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/posts/${postId}/comments`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const comments = await response.json();
+                    renderComments(postId, comments);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки комментариев:', error);
+            }
+        }
+
+        // Рендеринг комментариев
+        function renderComments(postId, comments) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            const commentsContainer = commentsSection.querySelector('.comments-container');
+            
+            if (!commentsContainer) {
+                // Создаем контейнер для комментариев
+                const container = document.createElement('div');
+                container.className = 'comments-container';
+                commentsSection.insertBefore(container, commentsSection.querySelector('.add-comment'));
+            }
+            
+            // Очищаем и добавляем комментарии
+            const container = commentsSection.querySelector('.comments-container');
+            container.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Avatar" class="comment-avatar">
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <strong>${escapeHtml(comment.user?.name || 'Пользователь')}</strong>
+                            <span>${formatPostDate(comment.created_at)}</span>
+                        </div>
+                        <p>${escapeHtml(comment.content)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Запуск инициализации
+        init();
+    });
+</script>
